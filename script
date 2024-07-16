@@ -1,0 +1,40 @@
+-- Configuration
+local ADMIN_COMMAND = ":gear"  -- Command to trigger giving gear
+local GEAR_ID = 93136746     -- Replace with the ID of the gear you want to give
+
+-- Function to give gear to a player
+local function giveGear(player)
+    -- Check if the gear ID is valid
+    local gear = Instance.new("Tool")
+    gear.Name = "GivenGear"
+    gear.GripPos = Vector3.new(0, 1, 0)  -- Adjust the grip position as needed
+    gear.Parent = player.Backpack
+    
+    -- Notify the player
+    local message = Instance.new("Hint")
+    message.Text = "You have received a gear!"
+    message.Parent = player.PlayerGui
+    wait(3)
+    message:Destroy()
+end
+
+-- Command handling
+game.Players.PlayerAdded:Connect(function(player)
+    player.Chatted:Connect(function(message)
+        if message:lower():sub(1, #ADMIN_COMMAND) == ADMIN_COMMAND then
+            -- Check if the player has permission (you can adjust this based on your admin system)
+            if player:IsInGroup(15102943) then  -- Replace with your admin group ID
+                local targetPlayerName = message:sub(#ADMIN_COMMAND + 2)  -- Extract the player's name
+                local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
+                
+                if targetPlayer then
+                    giveGear(targetPlayer)
+                else
+                    player:Kick("Player not found or not in game.")
+                end
+            else
+                player:Kick("You do not have permission to use this command.")
+            end
+        end
+    end)
+end)
